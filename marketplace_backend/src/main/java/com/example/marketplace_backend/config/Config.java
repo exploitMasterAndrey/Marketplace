@@ -17,15 +17,28 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Класс конфигурации Spring Security
+ * @version 1.0
+ */
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @Configuration
 @RequiredArgsConstructor
 public class Config{
+    /**Поле слоя бизнес логики */
     private final UserService userService;
+    /**Поле утилитного класса JWT */
     private final JWTUtil jwtUtil;
+    /**Поле аuthenticationEntryPoint — модифицирует ответ, чтобы дать понять клиенту что необходима аутентификация */
     private final AuthenticationEntryPoint authenticationEntryPoint;
 
+    /**
+     * Метод проверки пароля
+     * @param httpSecurity
+     * @return httpSecurity
+     * @throws Exception
+     */
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity httpSecurity) throws Exception{
         return httpSecurity
@@ -35,11 +48,21 @@ public class Config{
                 .and().build();
     }
 
+    /**
+     * Бин шифрователя паролей
+     * @return
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
     }
 
+    /**
+     * Метод фильтрации запросов
+     * @param httpSecurity
+     * @return httpSecurity
+     * @throws Exception
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity

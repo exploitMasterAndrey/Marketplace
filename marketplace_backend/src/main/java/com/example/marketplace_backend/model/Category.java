@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * Модель данных категории
+ */
 @Entity
 @Table
 @Data
