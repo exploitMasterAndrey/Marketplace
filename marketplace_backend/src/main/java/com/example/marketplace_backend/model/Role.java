@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
+/**
+ * Модель данных ролей
+ */
 @Entity
 @Table
 @NoArgsConstructor

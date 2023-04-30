@@ -16,12 +16,26 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * Класс фильтрации запроса с jwt токеном
+ * @version 1.0
+ */
 @Component
 @RequiredArgsConstructor
 public class JWTAuthFilter extends OncePerRequestFilter {
+    /**Поле слоя бизнес логики */
     private final UserService userService;
+    /**Поле утилитного класса JWT */
     private final JWTUtil jwtUtil;
 
+    /**
+     * Метод фильтрации запроса на валидность jwt токена
+     * @param request
+     * @param response
+     * @param filterChain
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authToken = jwtUtil.getToken(request);
