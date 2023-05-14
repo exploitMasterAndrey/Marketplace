@@ -4,8 +4,7 @@ import com.example.marketplace_backend.dto.ProductDto;
 import com.example.marketplace_backend.model.Product;
 import com.example.marketplace_backend.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,9 +37,10 @@ public class ProductController {
      * @param productDto
      * @return созданный продукт
      */
-    @PostMapping("/create")
-    public ResponseEntity<?> createProduct(@RequestBody ProductDto productDto){
-        return ResponseEntity.ok(productService.createProduct(productDto));
+    @PostMapping("/createOrUpdate")
+    public ResponseEntity<?> createOrUpdateProduct(@RequestBody ProductDto productDto){
+        if (productDto.getId() != null) return ResponseEntity.ok(productService.updateProduct(productDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(productDto));
     }
 
     /**
@@ -63,6 +63,12 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductByTitle(title));
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id){
+        productService.delete(id);
+        return ResponseEntity.ok(new DeleteResponse(id));
+    }
+
     /**
      * Получение страницы с продуктами
      * @param offset - номер страницы
@@ -81,4 +87,6 @@ public class ProductController {
                                                @RequestParam(required = false) String title){
         return ResponseEntity.ok(productService.getPageOfSelectedProducts(price_min, price_max, categoryId, title, offset, limit));
     }
+
+    record DeleteResponse(Long id){}
 }

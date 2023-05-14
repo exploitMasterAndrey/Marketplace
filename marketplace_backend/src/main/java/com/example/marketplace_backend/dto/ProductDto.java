@@ -1,11 +1,13 @@
 package com.example.marketplace_backend.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
  * Класс модели передаваемых данных продукта
  */
 @Data
+@AllArgsConstructor
 public class ProductDto {
     /** Идендификатор продукта*/
     private Long id;
@@ -25,4 +27,6 @@ public class ProductDto {
     private Integer purchasedCnt;
     /** Категория продукта*/
     private String category;
+
+    private Long sellerId;
 }

@@ -7,21 +7,34 @@ import styles from "../../styles/Sidebar.module.css";
 const ManagementSidebar = () => {
   const { currentUser } = useSelector(({ user }) => user);
 
-  const list = [
-    {id: 1, name: "Профиль"}
+  const [list, setList] = useState([
+    {id: 1, name: "Профиль"},
+    {id: 5, name: "Мои заказы"}
+  ]);
+
+  const adminList = [
+    {id: 1, name: "Профиль"},
+    {id: 2, name: "Товары"},
+    {id: 3, name: "Продавцы"},
+    {id: 4, name: "Категории"},
+    {id: 5, name: "Мои заказы"}
   ]
 
-  // useEffect(() => {
-  //   if (!currentUser) return;
-  //   if(currentUser.roles.includes("SELLER")){
-  //       const newList = list.push({id: 2, name:"Товары"})
-  //       setList(newList);
-  //   }
-  //   if(currentUser.roles.includes("ADMIN")){
-  //       const newList = list.push({id: 2, name:"Товары"}, {id: 3, name: "Продавцы"});
-  //       setList(newList);
-  //   }
-  // }, [currentUser]);
+  const sellerList = [
+    {id: 1, name: "Профиль"},
+    {id: 2, name: "Товары"},
+    {id: 5, name: "Мои заказы"}
+  ]
+
+  useEffect(() => {
+    if (!currentUser) return;
+    if(currentUser.roles.includes('SELLER')){
+        setList(sellerList);
+    }
+    if(currentUser.roles.includes('ADMIN')){
+        setList(adminList);
+    }
+  }, []);
 
   return (
     <section className={styles.sidebar}>        
@@ -45,7 +58,7 @@ const ManagementSidebar = () => {
 
       <div className={styles.footer}>
         <a href="/help" target="_blank" className={styles.link}>
-          Help
+          Помощь
         </a>
         <a
           href="/terms"
@@ -53,7 +66,7 @@ const ManagementSidebar = () => {
           className={styles.link}
           style={{ textDecoration: "underline" }}
         >
-          Terms & Conditions
+          Условия
         </a>
       </div>
     </section>

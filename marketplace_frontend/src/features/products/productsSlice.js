@@ -18,6 +18,33 @@ export const getProducts = createAsyncThunk(
   }
 );
 
+export const deleteProduct = createAsyncThunk(
+  "products/deleteProduct",
+  async (sellerId, thunkAPI) => {
+    try {
+      const res = await axios.delete(`${BASE_URL}/products/delete/${sellerId}`);
+      return res.data;
+    } catch (err) {
+      console.log(err);
+      return thunkAPI.rejectWithValue(err);
+    }
+  }
+);
+
+export const createOrUpdateProduct = createAsyncThunk(
+  "products/createOrUpdateProduct",
+  async (productParams, thunkAPI) => {
+    try {
+      const res = await axios.post(`${BASE_URL}/products/createOrUpdate`, productParams);
+      console.log(res.data);
+      return res.data;
+    } catch (err) {
+      console.log(err);
+      return thunkAPI.rejectWithValue(err);
+    }
+  }
+);
+
 const productsSlice = createSlice({
   name: "products",
   initialState: {
@@ -45,6 +72,13 @@ const productsSlice = createSlice({
     });
     builder.addCase(getProducts.rejected, (state) => {
       state.isLoading = false;
+    });
+    builder.addCase(createOrUpdateProduct.fulfilled, (state, { payload }) => {
+      state.list = state.list.filter((item) => item.id !== payload.id); 
+      state.list.push(payload);
+    });
+    builder.addCase(deleteProduct.fulfilled, (state, { payload }) => {
+      state.list = state.list.filter((item) => item.id !== payload.id); 
     });
   },
 });

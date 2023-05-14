@@ -17,6 +17,12 @@ export const createUser = createAsyncThunk(
   }
 );
 
+export async function getAllOrders(userId){
+  const res = await axios(`${BASE_URL}/orders/getAll/${userId}`);
+  console.log(res);
+  return res.data;
+}
+
 export const loginUser = createAsyncThunk(
   "users/loginUser",
   async (payload, thunkAPI) => {
@@ -45,14 +51,37 @@ export const updateUser = createAsyncThunk(
   }
 );
 
+export const createOrder = createAsyncThunk(
+  "users/createOrder",
+  async (payload, thunkAPI) => {
+    try {
+      console.log(payload)
+      const res = await axios.post(`${BASE_URL}/orders/create`, payload);
+      return res.data;
+    } catch (err) {
+      console.log(err);
+      return thunkAPI.rejectWithValue(err);
+    }
+  }
+);
+
+const currentUser = localStorage.getItem("currentUser") !== null
+? JSON.parse(localStorage.getItem("currentUser")) : [];
+
 const addCurrentUser = (state, { payload }) => {
+  localStorage.setItem("currentUser", JSON.stringify(payload));
   state.currentUser = payload;
 };
+
+const clearCart = (state, { payload }) => {
+  state.cart = [];
+};
+
 
 const userSlice = createSlice({
   name: "user",
   initialState: {
-    currentUser: null,
+    currentUser: currentUser,
     cart: [],
     isLoading: false,
     formType: "signup",
@@ -82,15 +111,24 @@ const userSlice = createSlice({
     toggleFormType: (state, { payload }) => {
       state.formType = payload;
     },
+    logout: (state, { payload }) => {
+      state.currentUser = null;
+      state.cart = [];
+      state.isLoading = false;
+      state.formType = "signup";
+      state.showForm = false;
+      localStorage.setItem("currentUser", null);
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(createUser.fulfilled, addCurrentUser);
     builder.addCase(loginUser.fulfilled, addCurrentUser);
     builder.addCase(updateUser.fulfilled, addCurrentUser);
+    builder.addCase(createOrder.fulfilled, clearCart);
   },
 });
 
-export const { addItemToCart, removeItemFromCart, toggleForm, toggleFormType } =
+export const { addItemToCart, removeItemFromCart, toggleForm, toggleFormType, logout} =
   userSlice.actions;
 
 export default userSlice.reducer;

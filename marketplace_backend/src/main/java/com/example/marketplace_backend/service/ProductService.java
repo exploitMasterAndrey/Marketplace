@@ -2,25 +2,34 @@ package com.example.marketplace_backend.service;
 
 import com.example.marketplace_backend.dto.ProductDto;
 import com.example.marketplace_backend.exceptions.ProductNotFoundException;
+import com.example.marketplace_backend.exceptions.UserNotFoundException;
 import com.example.marketplace_backend.model.Category;
 import com.example.marketplace_backend.model.Product;
+import com.example.marketplace_backend.model.User;
+import com.example.marketplace_backend.repository.CategoryRepo;
 import com.example.marketplace_backend.repository.ProductRepo;
+import com.example.marketplace_backend.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
+    private final UserRepo userRepo;
     private final ProductRepo productRepo;
-    private final CategoryService categoryService;
+    private final CategoryRepo categoryRepo;
 
     public Product createProduct(ProductDto productDto){
-        Category category = categoryService.findCategoryByName(productDto.getCategory());
+        Optional<User> sellerOpt = userRepo.findById(productDto.getSellerId());
+        User seller = sellerOpt.orElseThrow(() -> new UserNotFoundException("Seller not found!"));
+
+        Category category = categoryRepo.findByName(productDto.getCategory());
+
         Product product = new Product(
                 productDto.getDescription(),
                 productDto.getImage01(),
@@ -28,9 +37,29 @@ public class ProductService {
                 productDto.getImage03(),
                 productDto.getPrice(),
                 productDto.getTitle(),
-                category
+                category,
+                seller
         );
         return productRepo.save(product);
+    }
+
+    public Product updateProduct(ProductDto productDto){
+        Category category = categoryRepo.findByName(productDto.getCategory());
+        Product product = productRepo.getById(productDto.getId());
+
+        if (category != null) product.setCategory(category);
+        product.setDescription(productDto.getDescription());
+        product.setTitle(productDto.getTitle());
+        product.setPrice(productDto.getPrice());
+        product.setImage01(productDto.getImage01());
+        product.setImage02(productDto.getImage02());
+        product.setImage03(productDto.getImage03());
+
+        return productRepo.save(product);
+    }
+
+    public void delete(Long id){
+        productRepo.deleteById(id);
     }
 
     public Product getProductById(Long id){
@@ -40,18 +69,6 @@ public class ProductService {
     public List<Product> getProductsByCategoryId(Long id, Pageable pageable){
         return productRepo.findProductsByCategory_Id(id, pageable);
     }
-
-//    private List<Product> getProductsWherePriceGreaterThanAndCategory(Integer price, Long id, Pageable pageable){
-//        return productRepo.findProductsByPriceGreaterThanAndCategory_Id(price, id, pageable);
-//    }
-
-//    private List<Product> getProductsWherePriceLessThanAndCategory(Integer price, Long id, Pageable pageable){
-//        return productRepo.findProductsByPriceLessThanAndCategory_Id(price, id, pageable);
-//    }
-
-//    private List<Product> getProductWherePriceBetweenAndCategory(Integer price_min, Integer price_max, Long category_id, Pageable pageable){
-//        return productRepo.findProductsByPriceBetweenAndCategory_Id(price_min, price_max, category_id, pageable);
-//    }
 
     public List<Product> getPageOfSelectedProducts(Integer price_min, Integer price_max, Long category_id, String title, Integer offset, Integer limit){
         Pageable page = PageRequest.of(offset, limit);
@@ -83,10 +100,4 @@ public class ProductService {
     public List<Product> getPageOfProducts(Pageable page){
         return productRepo.findAll(page).toList();
     }
-
-//    public Product updateProduct(Product updates){
-//        Optional<Product> product = productRepo.findById(updates.getId());
-//        if (updates.getCategory())
-//    }
-
 }

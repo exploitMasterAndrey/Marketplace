@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -46,11 +47,12 @@ public class UserService implements UserDetailsService {
         Set<Role> roles = new HashSet<>();
         roles.add(roleService.findRoleByName("USER"));
         roles.add(roleService.findRoleByName("SELLER"));
+        String avatar = "https://png.pngtree.com/png-clipart/20200701/original/pngtree-character-default-avatar-png-image_5407167.jpg";
         User user = new User(
                 userDto.getEmail(),
                 userDto.getUsername(),
                 passwordEncoder.encode(userDto.getPassword()),
-                userDto.getAvatar(),
+                userDto.getAvatar().equals("") ? avatar : userDto.getAvatar(),
                 roles
         );
         return userRepo.save(user);
@@ -79,7 +81,21 @@ public class UserService implements UserDetailsService {
         return userRepo.save(user);
     }
 
+    public User updateSeller(UserDto userDto){
+        Optional<User> userOptional = userRepo.findById(userDto.getId());
+        User user = userOptional.orElseThrow(() -> new UsernameNotFoundException("No user with such id!"));
+        if(userDto.getUsername() != null) user.setUsername(userDto.getUsername());
+        if(userDto.getAvatar() != null) user.setAvatar(userDto.getAvatar());
+
+        return userRepo.save(user);
+    }
+
     public void delete(Long id){
         userRepo.deleteById(id);
+    }
+
+    public List<User> getAllSellers(){
+        Role role = roleService.findRoleByName("SELLER");
+        return userRepo.findUserByRolesContains(role);
     }
 }

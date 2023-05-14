@@ -12,6 +12,8 @@ import AVATAR from "../../images/avatar.jpg";
 import { toggleForm } from "../../features/user/userSlice";
 import { useGetProductByTitleQuery } from "../../features/api/apiSlice";
 
+import { logout } from "../../features/user/userSlice";
+
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -19,13 +21,17 @@ const Header = () => {
   const [searchValue, setSearchValue] = useState("");
   const { currentUser, cart } = useSelector(({ user }) => user);
 
-  const [values, setValues] = useState({ name: "Guest", avatar: AVATAR });
+  const nonLoggedPriview = { name: "Guest", avatar: AVATAR };
 
-  // const { data, isLoading } = useGetProductsQuery({ title: searchValue });
+  const [values, setValues] = useState(nonLoggedPriview);
+
   const { data, isLoading } = useGetProductByTitleQuery({ title: searchValue });
 
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser){
+      setValues(nonLoggedPriview);
+      return;
+    } 
 
     setValues(currentUser);
   }, [currentUser]);
@@ -100,11 +106,11 @@ const Header = () => {
         </form>
 
         <div className={styles.account}>
-          <Link to={ROUTES.HOME} className={styles.favourites}>
+          <div className={styles.favourites} onClick={() => {dispatch(logout())}}>
             <svg className={styles["icon-fav"]}>
               <use xlinkHref={`${process.env.PUBLIC_URL}/sprite.svg#heart`} />
             </svg>
-          </Link>
+          </div>
 
           <Link to={ROUTES.CART} className={styles.cart}>
             <svg className={styles["icon-cart"]}>

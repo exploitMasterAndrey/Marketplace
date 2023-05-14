@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,10 +49,25 @@ public class UserController {
      * @param userDto
      * @return созданный продавец
      */
-    @PostMapping("/createSeller")
-    public ResponseEntity<?> createSeller(@RequestBody UserDto userDto){
-        User sellerUser = userService.createSellerUser(userDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new CreatedSellerResponse(sellerUser.getId(), sellerUser.getEmail(), sellerUser.getUsername(), sellerUser.getAvatar()));
+    @PostMapping("/createOrUpdateSeller")
+    public ResponseEntity<?> createOrUpdateSeller(@RequestBody UserDto userDto){
+        if (userDto.getId() != null){
+            User updatedSeller = userService.updateSeller(userDto);
+            return ResponseEntity.ok(new UserResponse(updatedSeller.getId(), updatedSeller.getEmail(), updatedSeller.getUsername(), updatedSeller.getAvatar()));
+        }
+        User createdSeller = userService.createSellerUser(userDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponse(createdSeller.getId(), createdSeller.getEmail(), createdSeller.getUsername(), createdSeller.getAvatar()));
+    }
+
+    @GetMapping("/getSellers")
+    public ResponseEntity<?> getAllSellers(){
+        List<UserResponse> allSellers = userService.getAllSellers().stream()
+                .map(user -> new UserResponse(
+                        user.getId(),
+                        user.getEmail(),
+                        user.getUsername(),
+                        user.getAvatar())).toList();
+        return ResponseEntity.ok(allSellers);
     }
 
     /**
@@ -62,15 +78,16 @@ public class UserController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id){
         userService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new DeleteResponse(id));
     }
 
     /**
      * Модель ответа созданного продавца
-     * @param user_id - идентификатор пользователя
+     * @param id - идентификатор пользователя
      * @param email - почта
      * @param username - имя пользователя
      * @param avatar - аватар
      */
-    record CreatedSellerResponse(Long user_id, String email, String username, String avatar){}
+    record UserResponse(Long id, String email, String username, String avatar){}
+    record DeleteResponse(Long id){}
 }

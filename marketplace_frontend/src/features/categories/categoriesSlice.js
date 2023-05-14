@@ -16,6 +16,20 @@ export const getCategories = createAsyncThunk(
   }
 );
 
+export const createOrUpdateCategory = createAsyncThunk(
+  "products/createOrUpdateCategory",
+  async (categoryParams, thunkAPI) => {
+    try {
+      const res = await axios.post(`${BASE_URL}/categories/createOrUpdate`, categoryParams);
+      console.log(res.data);
+      return res.data;
+    } catch (err) {
+      console.log(err);
+      return thunkAPI.rejectWithValue(err);
+    }
+  }
+);
+
 const categoriesSlice = createSlice({
   name: "categories",
   initialState: {
@@ -32,6 +46,10 @@ const categoriesSlice = createSlice({
     });
     builder.addCase(getCategories.rejected, (state) => {
       state.isLoading = false;
+    });
+    builder.addCase(createOrUpdateCategory.fulfilled, (state, { payload }) => {
+      state.list = state.list.filter((item) => item.id !== payload.id); 
+      state.list.push(payload);
     });
   },
 });
