@@ -34,13 +34,13 @@ const UserSignupForm = ({ toggleCurrentFormType, closeForm }) => {
         </svg>
       </div>
 
-      <div className={styles.title}>Log In</div>
+      <div className={styles.title}>Войти</div>
 
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.group}>
           <input
             type="email"
-            placeholder="Your email"
+            placeholder="Почта"
             name="email"
             value={values.email}
             autoComplete="off"
@@ -52,7 +52,7 @@ const UserSignupForm = ({ toggleCurrentFormType, closeForm }) => {
         <div className={styles.group}>
           <input
             type="password"
-            placeholder="Your password"
+            placeholder="Пароль"
             name="password"
             value={values.password}
             autoComplete="off"
@@ -65,11 +65,11 @@ const UserSignupForm = ({ toggleCurrentFormType, closeForm }) => {
           onClick={() => toggleCurrentFormType("signup")}
           className={styles.link}
         >
-          Create an account
+          Зарегистрироваться
         </div>
 
         <button type="submit" className={styles.submit}>
-          Login
+          Войти
         </button>
       </form>
     </div>

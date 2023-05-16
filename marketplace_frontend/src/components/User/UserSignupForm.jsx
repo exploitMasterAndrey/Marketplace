@@ -36,13 +36,13 @@ const UserSignupForm = ({ toggleCurrentFormType, closeForm }) => {
         </svg>
       </div>
 
-      <div className={styles.title}>Sign Up</div>
+      <div className={styles.title}>Зарегистрироваться</div>
 
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.group}>
           <input
             type="email"
-            placeholder="Your email"
+            placeholder="Почта"
             name="email"
             value={values.email}
             autoComplete="off"
@@ -54,7 +54,7 @@ const UserSignupForm = ({ toggleCurrentFormType, closeForm }) => {
         <div className={styles.group}>
           <input
             type="username"
-            placeholder="Your name"
+            placeholder="Имя"
             name="username"
             value={values.username}
             autoComplete="off"
@@ -66,7 +66,7 @@ const UserSignupForm = ({ toggleCurrentFormType, closeForm }) => {
         <div className={styles.group}>
           <input
             type="password"
-            placeholder="Your password"
+            placeholder="Пароль"
             name="password"
             value={values.password}
             autoComplete="off"
@@ -78,7 +78,7 @@ const UserSignupForm = ({ toggleCurrentFormType, closeForm }) => {
         <div className={styles.group}>
           <input
             type="avatar"
-            placeholder="Your avatar"
+            placeholder="Аватар"
             name="avatar"
             value={values.avatar}
             autoComplete="off"
@@ -91,11 +91,11 @@ const UserSignupForm = ({ toggleCurrentFormType, closeForm }) => {
           className={styles.link}
           onClick={() => toggleCurrentFormType("login")}
         >
-          I already have an account
+          У меня уже есть аккаунт
         </div>
 
         <button type="submit" className={styles.submit}>
-          Create an account
+          Зарегистрироваться
         </button>
       </form>
     </div>

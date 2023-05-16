@@ -21,7 +21,7 @@ const Header = () => {
   const [searchValue, setSearchValue] = useState("");
   const { currentUser, cart } = useSelector(({ user }) => user);
 
-  const nonLoggedPriview = { name: "Guest", avatar: AVATAR };
+  const nonLoggedPriview = { name: "Гость", avatar: AVATAR };
 
   const [values, setValues] = useState(nonLoggedPriview);
 
@@ -106,11 +106,13 @@ const Header = () => {
         </form>
 
         <div className={styles.account}>
+          {currentUser &&
           <div className={styles.favourites} onClick={() => {dispatch(logout())}}>
             <svg className={styles["icon-fav"]}>
               <use xlinkHref={`${process.env.PUBLIC_URL}/sprite.svg#heart`} />
             </svg>
           </div>
+          }
 
           <Link to={ROUTES.CART} className={styles.cart}>
             <svg className={styles["icon-cart"]}>
